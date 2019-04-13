@@ -3,16 +3,22 @@ package com.airlenet.io.socket.spring.autoconfigure;
 import com.airlenet.io.socket.server.transport.websocket.WebsocketIOServlet;
 import com.airlenet.io.socket.server.transport.websocket.WebsocketTransportConnection;
 import com.airlenet.io.socket.spring.DefaultWebsocketIOServlet;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 @Configuration
+@EnableConfigurationProperties(SocketIOProperties.class)
 public class SocketIOAutoConfigure {
 
-    @ConditionalOnMissingBean
+//    @ConditionalOnBean(TomcatServletWebServerFactory.class)
+    @ConditionalOnProperty(name = "spring.socket.io.serverEndpointExporter", havingValue = "true", matchIfMissing = true)
     @Bean
     public ServerEndpointExporter serverEndpointExporter() {
         return new ServerEndpointExporter();
