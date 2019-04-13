@@ -1,0 +1,3 @@
+[submodule "socket.io-client-java"]
+	path = socket.io-client-java
+	url = https://github.com/socketio/socket.io-client-java.git
