@@ -25,6 +25,7 @@ package com.airlenet.io.socket.protocol;
 import com.airlenet.io.socket.server.SocketIOProtocolException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 
@@ -48,7 +49,8 @@ public final class SocketIOProtocol
 
     private static final ObjectMapper mapper = new ObjectMapper();
     static {
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+//        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
     public static final String DEFAULT_NAMESPACE = "/";
