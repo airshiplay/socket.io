@@ -256,8 +256,15 @@ public final class SocketIOProtocol
             }
             else
             {
-                ns = data.substring(pos.getIndex(), idx);
-                pos.setIndex(idx + 1);
+                int i = data.indexOf("?", pos.getIndex());
+                if( i<0){
+                    ns = data.substring(pos.getIndex(), idx);
+                    pos.setIndex(idx + 1);
+                }else{
+                    ns = data.substring(pos.getIndex(), i);
+                    pos.setIndex(idx + 1);
+                }
+
             }
         }
         return ns;

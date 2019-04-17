@@ -7,8 +7,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
@@ -17,8 +17,9 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 @EnableConfigurationProperties(SocketIOProperties.class)
 public class SocketIOAutoConfigure {
 
-//    @ConditionalOnBean(TomcatServletWebServerFactory.class)
+    //    @ConditionalOnBean(TomcatServletWebServerFactory.class)
     @ConditionalOnProperty(name = "spring.socket.io.serverEndpointExporter", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnBean(value = {ServletWebServerFactory.class})
     @Bean
     public ServerEndpointExporter serverEndpointExporter() {
         return new ServerEndpointExporter();

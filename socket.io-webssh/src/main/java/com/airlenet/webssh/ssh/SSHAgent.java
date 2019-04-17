@@ -60,24 +60,34 @@ public final class SSHAgent {
     }
 
     public void execCommand(final Socket socket) throws IOException {
+
+        socket.on("connection", new EventListener() {
+            @Override
+            public Object onEvent(String name, Object[] args, boolean ackRequested) {
+                return null;
+            }
+        });
         //执行命令方法，使用线程池来执行
         service.submit(new Runnable() {
             @Override
             public void run() {
                 String line;
+                boolean a =false;
                 try {
 
                     //持续获取服务器标准输出
                     while ((line = stdout.readLine()) != null) {
+                        a= stdout.ready();
                         socket.emit("data", "\r\n");
                         socket.emit("data", line);
+
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
-        session.requestPTY("vt100", 80, 24, 640, 480, null);
+        session.requestPTY("xterm-color", 80, 24, 640, 480, null);
         session.startShell();
         socket.emit("menu", "<a id=\"logBtn\"><i class=\"fas fa-clipboard fa-fw\"></i> Start Log</a><a id=\"downloadLogBtn\"><i class=\"fas fa-download fa-fw\"></i> Download Log</a>");
         //42["allowreauth",true]
@@ -108,12 +118,6 @@ public final class SSHAgent {
         socket.emit("allowreplay", true);
 
 
-        socket.on("connection", new EventListener() {
-            @Override
-            public Object onEvent(String name, Object[] args, boolean ackRequested) {
-                return null;
-            }
-        });
 
         socket.on("data", new EventListener() {
             @Override
