@@ -3,8 +3,11 @@ package com.airlenet.webssh.connection;
 import com.airlenet.io.socket.server.ConnectionException;
 import com.airlenet.io.socket.server.ConnectionListener;
 import com.airlenet.io.socket.server.Socket;
+import com.airlenet.webssh.entity.DeviceEntity;
+import com.airlenet.webssh.service.DeviceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ExecutorService;
@@ -14,14 +17,24 @@ import java.util.concurrent.Executors;
 public class SshConnection implements ConnectionListener {
     private static final Logger logger = LoggerFactory.getLogger(SshConnection.class);
     private ExecutorService service = Executors.newFixedThreadPool(3);
-    String consoleIp = "172.19.8.251";
-    Integer consolePort = 22;
-    String consoleUsername = "root";
-    String consolePassword = "123456";
+    String consoleIp = "";
+    Integer consolePort = 0;
+    String consoleUsername = "";
+    String consolePassword = "";
+
+    @Autowired
+    DeviceService deviceService;
 
     @Override
     public void onConnect(Socket socket) throws ConnectionException {
-        logger.debug("onConnect", this + " sessionId=" + socket.getSession().getSessionId());
+        logger.debug("onConnect sessionId={} ParameterMap={}", socket.getSession().getSessionId(), socket.getRequest().getParameterMap());
+        String id = socket.getRequest().getParameter("id");
+        DeviceEntity deviceEntity = deviceService.getPlaintextDevice(Long.parseLong(id));
+
+        consoleIp = deviceEntity.getIp();
+        consolePort = deviceEntity.getPort();
+        consoleUsername = deviceEntity.getUsername();
+        consolePassword = deviceEntity.getPassword();
 
         SocketShell socketShell = new SocketShell(consoleIp, consolePort, consoleUsername, consolePassword, socket);
         socketShell.start();

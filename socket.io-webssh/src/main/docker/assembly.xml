@@ -1,0 +1,20 @@
+<assembly>
+    <!--<dependencySets>-->
+        <!--<dependencySet>-->
+            <!--&lt;!&ndash;是否把本项目添加到依赖文件夹下&ndash;&gt;-->
+            <!--<useProjectArtifact>true</useProjectArtifact>-->
+            <!--<outputDirectory>lib</outputDirectory>-->
+            <!--&lt;!&ndash;将scope为runtime的依赖包打包&ndash;&gt;-->
+            <!--<scope>runtime</scope>-->
+        <!--</dependencySet>-->
+    <!--</dependencySets>-->
+    <fileSets>
+        <fileSet>
+            <directory>target</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>*-exec.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

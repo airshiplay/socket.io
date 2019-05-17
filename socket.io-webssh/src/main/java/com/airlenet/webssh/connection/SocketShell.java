@@ -130,7 +130,7 @@ public class SocketShell extends Thread {
         socket.emit("setTerminalOpts", "{\"cursorBlink\":true,\"scrollback\":10000,\"tabStopWidth\":8,\"bellStyle\":\"sound\"}");
 
         //42["title","ssh://172.19.8.251"]
-//        socket.emit("title", "ssh://172.19.8.251");
+        socket.emit("title", "ssh://" + consoleIp);
 
         socket.emit("headerBackground", "green");
 
@@ -179,7 +179,7 @@ public class SocketShell extends Thread {
     @Override
     public void run() {
         //根据主机名先获取一个远程连接
-        connection = new Connection(consoleIp);
+        connection = new Connection(consoleIp, consolePort);
         //发起连接
         try {
             connection.connect();
@@ -235,7 +235,7 @@ public class SocketShell extends Thread {
             try {
                 stdout.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("close", e);
             }
         }
         if (connection != null)
