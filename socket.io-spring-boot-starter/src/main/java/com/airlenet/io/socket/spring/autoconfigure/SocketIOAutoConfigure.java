@@ -7,11 +7,20 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
+import org.springframework.web.socket.server.standard.ServerEndpointRegistration;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.websocket.DeploymentException;
+import javax.websocket.server.ServerContainer;
+import javax.websocket.server.ServerEndpoint;
+import javax.websocket.server.ServerEndpointConfig;
 
 @Configuration
 @EnableConfigurationProperties(SocketIOProperties.class)
@@ -38,10 +47,15 @@ public class SocketIOAutoConfigure {
     }
 
     @Bean
-    public ServletRegistrationBean getServletRegistrationBean() {
+    public ServletRegistrationBean getServletRegistrationBean(SocketIOProperties properties) {
         ServletRegistrationBean registration = new ServletRegistrationBean(websocketIOServlet());
         registration.setName(DefaultWebsocketIOServlet.class.getName());
         registration.addUrlMappings("/socket.io/*");
         return registration;
     }
+
+//    @Bean
+//    public ServerEndpointRegistration websocketEndpoint() {
+//        return new ServerEndpointRegistration("/socket.io/", websocketTransportConnection());
+//    }
 }
