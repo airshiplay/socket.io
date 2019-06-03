@@ -205,7 +205,8 @@
                 <configuration>
                     <images>
                         <image>
-                            <name>airlenet/${project.artifactId}</name>
+                            <name>airlenet/${project.artifactId}:${project.version}</name>
+                            <alias>${project.name}</alias>
                             <build>
                                 <assembly>
                                     <descriptor>assembly.xml</descriptor>
