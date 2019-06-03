@@ -10,9 +10,9 @@ public class FileTest {
 
     @Test
     public void test() throws IOException {
-        FileInputStream inputStream = new FileInputStream(new File("/Users/lig/Downloads/a.txt"));
-        byte[] b = new byte[1024];
-        int read = inputStream.read(b);
-        System.out.println(read);
+//        FileInputStream inputStream = new FileInputStream(new File("~/Downloads/a.txt"));
+//        byte[] b = new byte[1024];
+//        int read = inputStream.read(b);
+//        System.out.println(read);
     }
 }

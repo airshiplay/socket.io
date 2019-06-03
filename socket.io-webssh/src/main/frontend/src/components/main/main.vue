@@ -7,10 +7,12 @@
                     mode="horizontal"
                     :defaultSelectedKeys="['1']"
                     :style="{ lineHeight: '64px' }"
+                    :selectedKeys="[currentMenu]"
+                    @click="handleMenuClick"
             >
-                <a-menu-item key="1">设备管理</a-menu-item>
-                <a-menu-item key="2">用户管理</a-menu-item>
-                <a-menu-item key="3">企业管理</a-menu-item>
+                <a-menu-item key="equipment">equipment management</a-menu-item>
+                <a-menu-item key="user">user management</a-menu-item>
+                <a-menu-item key="enterprise">enterprise management</a-menu-item>
             </a-menu>
         </a-layout-header>
         <a-layout-content :style="{ padding: '0 50px', marginTop: '64px' }">
@@ -31,7 +33,23 @@
 
 <script>
     export default {
-        name: "main1"
+        name: "main1",data(){
+            return {
+                currentMenu:this.$route.name
+            }
+        },methods:{
+            handleMenuClick(e) {
+                this.currentMenu = e.key
+                let {name, params, query} = {}
+                name= this.currentMenu
+                this.$router.push({
+                    name,
+                    params,
+                    query
+                })
+            }
+
+        }
     }
 </script>
 

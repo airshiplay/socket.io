@@ -2,18 +2,6 @@ import Main from '@/components/main'
 
 export default [
     {
-        path: '/',
-        name: '_home',
-        redirect: '/home',
-        component: Main,
-        children: [
-            {
-                path: '/home',
-                name: 'home',
-                component: () => import('@views/Home.vue')
-            }
-        ]
-    }, {
         path: '/login',
         name: 'login',
         meta: {
@@ -23,20 +11,61 @@ export default [
         component: () => import('@views/login/login.vue')
     },
     {
+        path: '/',
+        name: '_home',
+        redirect: '/equipment',
+    },
+    {
+        path: '/equipment',
+        name: '_equipment',
+        component: Main,
+        children: [
+            {
+                path: '',
+                name: 'equipment',
+                component: () => import( /* webpackChunkName: "device" */  '@views/device/device-list.vue')
+            }
+        ]
+    },
+    {
+        path: '/user',
+        name: '_user',
+        component: Main,
+        children: [
+            {
+                path: '',
+                name: 'user',
+                component: () => import( /* webpackChunkName: "user" */ '@views/user/user-list.vue')
+            }
+        ]
+    },
+    {
+        path: '/enterprise',
+        name: '_enterprise',
+        component: Main,
+        children: [
+            {
+                path: '',
+                name: 'enterprise',
+                component: () => import( /* webpackChunkName: "enterprise" */ '@views/enterprise/enterprise-list.vue')
+            }
+        ]
+    },
+    {
         path: '/about',
         name: 'about',
-        component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+        component: () => import(/* webpackChunkName: "about" */ '@views/About.vue')
     },
     {
         path: '/console/:id',
         name: 'console',
-        component: () => import(/* webpackChunkName: "about" */ '../views/Console.vue')
+        component: () => import(/* webpackChunkName: "console" */ '@views/Console.vue')
     },
 
     {
         path: '/rtty/console/:devid',
         name: 'rtty_console',
-        component: () => import(/* webpackChunkName: "about" */ '../views/rtty/Rtty.vue')
+        component: () => import(/* webpackChunkName: "rtty_console" */ '@views/rtty/Rtty.vue')
     },
     {
         path: '/401',
