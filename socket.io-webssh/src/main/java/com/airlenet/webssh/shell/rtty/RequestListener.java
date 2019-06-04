@@ -1,4 +1,4 @@
-package com.airlenet.webssh.rtty;
+package com.airlenet.webssh.shell.rtty;
 
 import org.springframework.stereotype.Component;
 

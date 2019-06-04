@@ -1,4 +1,4 @@
-package com.airlenet.webssh.rtty;
+package com.airlenet.webssh.shell.rtty;
 
 import com.airlenet.webssh.service.CacheService;
 import com.airlenet.webssh.service.DeviceService;

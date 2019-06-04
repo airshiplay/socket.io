@@ -1,6 +1,6 @@
 package com.airlenet.webssh.service;
 
-import com.airlenet.webssh.rtty.RttyDevice;
+import com.airlenet.webssh.shell.rtty.RttyDevice;
 
 public interface CacheService {
 

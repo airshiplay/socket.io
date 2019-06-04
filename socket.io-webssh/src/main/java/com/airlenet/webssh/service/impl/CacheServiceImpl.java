@@ -1,6 +1,6 @@
 package com.airlenet.webssh.service.impl;
 
-import com.airlenet.webssh.rtty.RttyDevice;
+import com.airlenet.webssh.shell.rtty.RttyDevice;
 import com.airlenet.webssh.service.CacheService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;

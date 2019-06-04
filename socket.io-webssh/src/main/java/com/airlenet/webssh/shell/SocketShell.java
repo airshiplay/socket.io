@@ -1,4 +1,4 @@
-package com.airlenet.webssh.connection;
+package com.airlenet.webssh.shell;
 
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.Session;
@@ -77,9 +77,14 @@ public class SocketShell extends Thread {
             @Override
             public Object onEvent(String name, Object[] args, boolean ackRequested) {
                 Map map = (Map) args[0];
-                map.get("rows");
-                map.get("cols");
+               Integer rows=Integer.valueOf(map.get("rows").toString())  ;
+               Integer cols= Integer.valueOf(map.get("cols").toString());
 //                stream.setWindow(map..rows, data.cols)
+                try {
+//                    session.requestPTY("xterm-color", 80, 24, 80*cols, 24*rows, null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 return "OK";
             }
         });
@@ -198,8 +203,8 @@ public class SocketShell extends Thread {
 
             //获取标准输入
             printWriter = new PrintWriter(session.getStdin());
-
-            session.requestPTY("xterm-color", 80, 24, 640, 480, null);
+// 80 24  640  480
+            session.requestPTY("xterm-color", 100, 36, 1280, 480, null);
             session.startShell();
 
             send();

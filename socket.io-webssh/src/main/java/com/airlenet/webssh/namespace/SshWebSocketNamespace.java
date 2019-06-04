@@ -1,10 +1,7 @@
 package com.airlenet.webssh.namespace;
 
-import com.airlenet.io.socket.server.ConnectionException;
-import com.airlenet.io.socket.server.ConnectionListener;
-import com.airlenet.io.socket.server.Socket;
 import com.airlenet.io.socket.server.transport.websocket.WebsocketIOServlet;
-import com.airlenet.webssh.connection.SshConnection;
+import com.airlenet.webssh.shell.SshConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

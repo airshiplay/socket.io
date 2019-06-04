@@ -120,7 +120,8 @@ public abstract class SocketIOServlet extends HttpServlet
 
         if (path.startsWith("/")) path = path.substring(1);
         String[] parts = path.split("/");
-
+        if (LOGGER.isLoggable(Level.INFO))
+            LOGGER.log(Level.INFO,request.getMethod()+ " " +request.getRequestURI()+" parameter= "+request.getParameterMap().toString());
         if ("GET".equals(request.getMethod()) && "socket.io.js".equals(parts[0]))
         {
             response.setContentType("text/javascript");
