@@ -17,55 +17,65 @@ export default [
     },
     {
         path: '/equipment',
-        name: '_equipment',
         component: Main,
         children: [
             {
                 path: '',
                 name: 'equipment',
-                component: () => import( /* webpackChunkName: "device" */  '@views/device/device-list.vue')
+                meta: {title:'Direct Equipment',},
+                component: () => import( /* webpackChunkName: "device-list" */  '@views/device/device-list.vue')
             }
         ]
     },
     {
+        path: '/console/:id',
+        name: 'console',
+        meta: {title:'Direct Terminal',},
+        component: () => import(/* webpackChunkName: "console" */ '@views/Console.vue')
+    },
+    {
+        path: '/rtty',
+        component: Main,
+        children: [
+            {
+                path: '',
+                name: 'rtty',
+                meta: {title:'Rtty Equipment',},
+                component: () => import( /* webpackChunkName: "rtty-list" */  '@views/rtty/rtty-list.vue')
+            }
+        ]
+    }, {
+        path: '/rtty/console/:devid',
+        name: 'rtty_console',
+        meta: {title:'Rtty Terminal',},
+        component: () => import(/* webpackChunkName: "rtty_console" */ '@views/rtty/Rtty.vue')
+    },
+    {
         path: '/user',
-        name: '_user',
         component: Main,
         children: [
             {
                 path: '',
                 name: 'user',
-                component: () => import( /* webpackChunkName: "user" */ '@views/user/user-list.vue')
+                component: () => import( /* webpackChunkName: "user-list" */ '@views/user/user-list.vue')
             }
         ]
     },
     {
         path: '/enterprise',
-        name: '_enterprise',
         component: Main,
         children: [
             {
                 path: '',
                 name: 'enterprise',
-                component: () => import( /* webpackChunkName: "enterprise" */ '@views/enterprise/enterprise-list.vue')
+                component: () => import( /* webpackChunkName: "enterprise-list" */ '@views/enterprise/enterprise-list.vue')
             }
         ]
     },
     {
         path: '/about',
         name: 'about',
-        component: () => import(/* webpackChunkName: "about" */ '@views/About.vue')
-    },
-    {
-        path: '/console/:id',
-        name: 'console',
-        component: () => import(/* webpackChunkName: "console" */ '@views/Console.vue')
-    },
-
-    {
-        path: '/rtty/console/:devid',
-        name: 'rtty_console',
-        component: () => import(/* webpackChunkName: "rtty_console" */ '@views/rtty/Rtty.vue')
+        component: () => import( /* webpackChunkName: "about" */'@views/About.vue')
     },
     {
         path: '/401',

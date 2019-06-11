@@ -2,17 +2,15 @@ package com.airlenet.webssh.service;
 
 import com.airlenet.webssh.shell.rtty.RttyDevice;
 
+import java.util.List;
+
 public interface CacheService {
 
-    public RttyDevice putRttyDevice(String uuid, RttyDevice rttyDevice);
-
+    public List<RttyDevice> getRttyDeviceList();
 
     public RttyDevice getRttyDevice(String uuid);
 
+    public RttyDevice putRttyDevice(String uuid, RttyDevice rttyDevice);
+
     public RttyDevice clearRttyDevice(String uuid);
-
-
-    public RttyDevice putRttyDeviceSessionId(String sessionId, RttyDevice rttyDevice);
-    public RttyDevice getRttyDeviceSessionId(String sessionId);
-    public RttyDevice clearRttyDeviceSessionId(String sessionId);
 }

@@ -7,15 +7,16 @@
                                 style="width: 200px;"
                                 @search="handleSearch"
                 />
+                <!--<a href="javascript:;" @click="() => handleAdd()">-->
+                    <!--<a-icon type="plus" style="font-size: 30px;"/>-->
+                <!--</a>-->
             </a-col>
             <a-col :span="8">
-                <a href="javascript:;" @click="() => handleAdd()" style="float: right;">
-                    <a-icon type="plus" style="font-size: 30px;"/>
-                </a>
+                <a href="https://github.com/zhaojh329/rtty" target="_blank" style="float: right">Rtty Client Install Notes </a>
             </a-col>
         </a-row>
         <a-table :columns="columns"
-                 :rowKey="record => record.id"
+                 :rowKey="record => record.devId"
                  :dataSource="data"
                  :pagination="pagination"
                  :loading="loading"
@@ -24,8 +25,11 @@
             <template slot="Index" slot-scope="text,record, index">
                 <span>{{`${index+1}`}}</span>
             </template>
-            <template slot="name" slot-scope="text,record">
+            <template slot="devId" slot-scope="text,record">
                 <a href="javascript:;" @click="() => gotoConsole(record)">{{text}}</a>
+            </template>
+            <template slot="uptime" slot-scope="text,record">
+                <span>{{UptimeText(text)}}</span>
             </template>
             <template slot="operation" slot-scope="text, record">
                 <a href="javascript:;" @click="() => editRecord(record)">
@@ -41,13 +45,11 @@
                 </a-popconfirm>
             </template>
         </a-table>
-        <device-modal ref="device-modal" @on-result="onResult"/>
     </div>
 </template>
 
 <script>
-    import {deleteDevice, getDeviceList} from "@api/api";
-    import DeviceModal from "./device-modal";
+    import {getRttyList} from "@api/api";
     /* eslint-disable */
     const columns = [{
         title: 'No',
@@ -55,49 +57,66 @@
         scopedSlots: {customRender: 'Index'},
     }, {
         title: 'Name',
-        dataIndex: 'name',
+        dataIndex: 'devId',
         width: '180px',
-        scopedSlots: {customRender: 'name'},
+        scopedSlots: {customRender: 'devId'},
     },
         {
-            title:'Description',
+            title: 'Description',
             dataIndex: 'desc',
         },
-        {
-        title: 'IP',
-        dataIndex: 'ip',
-        width: '100px',
-    },
         //     {
         //     title: 'port',
         //     dataIndex: 'port',
         // },
-        // {
-        //     title: 'username',
-        //     dataIndex: 'username',
-        // },
         {
-            title: 'operation',
-            dataIndex: 'operation',
-            width: '20px',
-            scopedSlots: {customRender: 'operation'},
-        }];
+            title: 'Uptime',
+            dataIndex: 'timestamp',
+            scopedSlots: {customRender: 'uptime'},
+        }
+        // , {
+        //     title: 'operation',
+        //     dataIndex: 'operation',
+        //     width: '20px',
+        //     scopedSlots: {customRender: 'operation'},
+        // }
+    ];
     export default {
-        name: "device-list",
-        components: {DeviceModal},
+        name: "rtty-list",
         mounted() {
             this.fetch();
         },
         data() {
             return {
                 data: [],
-                pagination: {showSizeChanger:true,showQuickJumper:true},
+                pagination: false,
                 queryText: '',
                 loading: false,
                 columns,
             }
         },
         methods: {
+            UptimeText(value) {
+                var duration = Math.floor((new Date().getTime() - value) / 1000)
+                var res = ''
+                if (duration > 60 * 60 * 24) {
+                    res = res + Math.floor(duration / (60 * 60 * 24)) + 'd'
+                    duration = duration % (60 * 60 * 24)
+                }
+                if (duration > 60 * 60) {
+                    res = res + Math.floor(duration / (60 * 60)) + 'h'
+                    duration = duration % (60 * 60)
+
+                }
+                if (duration > 60) {
+                    res = res + Math.floor(duration / (60)) + 'm'
+                    duration = duration % (60)
+                }
+                if (duration > 0) {
+                    res = res + duration + 's'
+                }
+                return res
+            },
             handleTableChange(pagination, filters, sorter) {
                 const pager = {...this.pagination};
                 pager.current = pagination.current;
@@ -126,7 +145,7 @@
             fetch(params = {}) {
                 // console.log('params:', params);
                 this.loading = true
-                getDeviceList({
+                getRttyList({
                     ...params,
                 }).then((data) => {
                     const pagination = {...this.pagination};
@@ -138,19 +157,19 @@
                     this.pagination = pagination;
                 });
             }, handleAdd() {
-                this.$refs['device-modal'].showModal();
+                // this.$refs['device-modal'].showModal();
             }, onDelete(id) {
-                debugger
-                deleteDevice({id}).then(data => {
-                    if (data.success) {
-                        this.fetch();
-                    }
-                })
+                // debugger
+                // deleteDevice({id}).then(data => {
+                //     if (data.success) {
+                //         this.fetch();
+                //     }
+                // })
             }, gotoConsole(record) {
-                this.$router.push({name: 'console', params: {id: record.id}});
+                this.$router.push({name: 'rtty_console', params: {devid: record.devId}});
             },
             editRecord(record) {
-                this.$refs['device-modal'].editModal(record);
+                // this.$refs['device-modal'].editModal(record);
             }
             , onResult() {
                 this.fetch();

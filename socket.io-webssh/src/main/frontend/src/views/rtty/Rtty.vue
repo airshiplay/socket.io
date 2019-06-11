@@ -3,8 +3,8 @@
         <div ref="terminal" style="height: 100%"></div>
         <a-modal v-model="upfile.modal" width="380" :mask-closable="false" @on-cancel="cancelUpfile">
             <p slot="header"><span>{{ $t('Upload file to device') }}</span></p>
-            <a-upload> :before-upload="beforeUpload" action="">
-                <Button type="primary">{{ $t('Please select the file to upload') }}</Button>
+            <a-upload  :beforeUpload="beforeUpload" action="">
+                <a-button type="primary">{{ $t('Please select the file to upload') }}</a-button>
             </a-upload>
             <div v-if="upfile.file !== null">{{ upfile.file.name }}</div>
             <div slot="footer">
@@ -29,7 +29,7 @@ export default {
     name: 'Rtty',
     data() {
         return {
-            upfile: {modal: false, file: null},
+            upfile: {modal: false, file: null},term:null,ws:null,rf:null
         }
     },
     methods: {
@@ -44,16 +44,16 @@ export default {
                 delete this.term;
             }
 
-            // this.$router.push('/');
+            this.$router.push({name:'rtty'});
         },
         beforeUpload (file) {
             if (file.size > 500 * 1024 * 1024) {
-                // this.$Message.warning(this.$t('Cannot be greater than 500MB'));
+                this.$message.warning(this.$t('Cannot be greater than 500MB'));
                 return false;
             }
 
             if (file.name.length > 255) {
-                // this.$Message.warning(this.$t('The file name too long'));
+                this.$message.warning(this.$t('The file name too long'));
                 return false;
             }
 
@@ -66,7 +66,7 @@ export default {
         },
         doUpload() {
             if (!this.upfile.file) {
-                // this.$Message.error(this.$t('Select the file to upload'));
+                this.$message.error(this.$t('Select the file to upload'));
                 return;
             }
 
@@ -133,11 +133,11 @@ export default {
                 let msg = JSON.parse(ev.data);
                 if (msg.type == "login") {
                     if (msg.err == 1) {
-                        // this.$Message.error(this.$t('Device offline'));
+                        this.$message.error(this.$t('Device offline'));
                         this.logout();
                         return;
                     } else if (msg.err == 2) {
-                        // this.$Message.error(this.$t('Sessions is full'));
+                        this.$message.error(this.$t('Sessions is full'));
                         this.logout();
                     }
 
@@ -196,7 +196,7 @@ export default {
         };
 
         ws.onerror = () => {
-            // this.$Message.error(this.$t('Connect failed'));
+            this.$message.error(this.$t('Connect failed'));
             this.logout();
         };
 

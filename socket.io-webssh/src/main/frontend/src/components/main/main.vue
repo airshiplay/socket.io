@@ -10,9 +10,10 @@
                     :selectedKeys="[currentMenu]"
                     @click="handleMenuClick"
             >
-                <a-menu-item key="equipment">equipment management</a-menu-item>
-                <a-menu-item key="user">user management</a-menu-item>
-                <a-menu-item key="enterprise">enterprise management</a-menu-item>
+                <a-menu-item key="equipment">Direct Equipment</a-menu-item>
+                <a-menu-item key="rtty">Rtty Equipment</a-menu-item>
+                <!--<a-menu-item key="user">user management</a-menu-item>-->
+                <!--<a-menu-item key="enterprise">enterprise management</a-menu-item>-->
             </a-menu>
         </a-layout-header>
         <a-layout-content :style="{ padding: '0 50px', marginTop: '64px' }">
@@ -33,15 +34,15 @@
 
 <script>
     export default {
-        name: "main1",data(){
+        name: "main1", data() {
             return {
-                currentMenu:this.$route.name
+                currentMenu: this.$route.name
             }
-        },methods:{
+        }, methods: {
             handleMenuClick(e) {
                 this.currentMenu = e.key
                 let {name, params, query} = {}
-                name= this.currentMenu
+                name = this.currentMenu
                 this.$router.push({
                     name,
                     params,

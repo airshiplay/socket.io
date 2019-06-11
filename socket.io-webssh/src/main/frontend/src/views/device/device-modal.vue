@@ -1,14 +1,18 @@
 <template>
     <a-modal
-            title="Add Device"
+            :title="title"
             v-model="visible"
             @ok="handleOk"
+            @cancel="handleCancel"
             :confirmLoading="confirmLoading"
 
     >
         <a-form
                 :form="form"
                 @submit="handleOk">
+            <a-form-item style="display: none">
+                <a-input v-decorator="['id',{}]"/>
+            </a-form-item>
             <a-form-item
                     label="Device Name"
                     :label-col="{ span: 8 }"
@@ -17,21 +21,21 @@
                         v-decorator="['name',{rules: [{ required: true, message: 'Please input your device name!' }]}]"/>
             </a-form-item>
             <!--<a-form-item-->
-                    <!--label="Connection Mode"-->
-                    <!--:label-col="{ span: 8 }"-->
-                    <!--:wrapper-col="{ span: 12 }">-->
-                <!--<a-select-->
-                        <!--v-decorator="['type',{rules: [{ required: true, message: 'Please select connection mode!' }]}]"-->
-                        <!--placeholder="Select a option"-->
-                        <!--@change="handleConnectTypeChange"-->
-                <!--&gt;-->
-                    <!--<a-select-option value="direct">-->
-                        <!--Direct connection-->
-                    <!--</a-select-option>-->
-                    <!--<a-select-option value="callhome">-->
-                        <!--CallHome connection-->
-                    <!--</a-select-option>-->
-                <!--</a-select>-->
+            <!--label="Connection Mode"-->
+            <!--:label-col="{ span: 8 }"-->
+            <!--:wrapper-col="{ span: 12 }">-->
+            <!--<a-select-->
+            <!--v-decorator="['type',{rules: [{ required: true, message: 'Please select connection mode!' }]}]"-->
+            <!--placeholder="Select a option"-->
+            <!--@change="handleConnectTypeChange"-->
+            <!--&gt;-->
+            <!--<a-select-option value="direct">-->
+            <!--Direct connection-->
+            <!--</a-select-option>-->
+            <!--<a-select-option value="callhome">-->
+            <!--CallHome connection-->
+            <!--</a-select-option>-->
+            <!--</a-select>-->
             <!--</a-form-item>-->
             <a-form-item
                     label="IP"
@@ -60,8 +64,8 @@
                     label="Password"
                     :label-col="{ span: 8 }"
                     :wrapper-col="{ span: 12 }">
-                <a-input
-                        v-decorator="['password',{rules: [{ required: true, message: 'Please input your device ip!' }]}]"/>
+                <a-input type="password"
+                        v-decorator="['password',{rules: [{ required: passwordValidate, message: 'Please input your device ip!' }]}]"/>
             </a-form-item>
             <a-form-item
                     label="Descrition"
@@ -74,9 +78,9 @@
 </template>
 
 <script>
-/* eslint-disable */
+    /* eslint-disable */
     import AFormItem from "ant-design-vue/es/form/FormItem";
-    import {addDevice} from "@api/api";
+    import {addDevice, editDevice} from "@api/api";
     import NodeRSA from 'node-rsa';
 
     const publicKey = '-----BEGIN PUBLIC KEY-----\n' +
@@ -98,13 +102,40 @@
         components: {AFormItem},
         data() {
             return {
+                title: '',
                 visible: false, confirmLoading: false, formLayout: 'horizontal',
+                edit: false,
                 form: this.$form.createForm(this),
+                passwordValidate: true
             }
         },
         methods: {
             showModal() {
+                this.passwordValidate = true
+                this.title = 'Add Device'
+                this.edit = false;
                 this.visible = true
+                this.$nextTick(() => {
+                    this.form.setFieldsValue({})
+                })
+            },
+            editModal(record) {
+
+                this.passwordValidate = false
+                this.title = 'Edit Device'
+                this.edit = true;
+                this.visible = true
+                this.$nextTick(() => {
+                    this.form.setFieldsValue({
+                        id: record.id,
+                        name: record.name,
+                        ip: record.ip,
+                        port: record.port,
+                        desc: record.desc,
+                        username: record.username
+                    });
+                    // this.form.validateFields(['password'], {force: true});
+                });
             },
             handleOk(e) {
                 e.preventDefault();
@@ -114,16 +145,31 @@
                         const obj = Object.assign({}, values);
                         const key = new NodeRSA();
                         key.importKey(publicKey, 'pkcs8-public');
-                        const pass = key.encrypt(obj.password, 'base64', 'utf-8');
-                        obj.password = pass
-                        obj.type='direct'
-                        addDevice(obj).then(data => {
-                            this.confirmLoading = false;
-                            if (data.success) {
-                                this.visible = false;
-                                this.$emit('on-result', true, data.content.id)
-                            }
-                        })
+                        if (obj.password) {
+                            const pass = key.encrypt(obj.password, 'base64', 'utf-8');
+                            obj.password = pass
+                        }
+                        obj.type = 'direct'
+                        if (this.edit) {
+                            editDevice(obj).then(data => {
+                                this.confirmLoading = false;
+                                if (data.success) {
+                                    this.form.resetFields()
+                                    this.visible = false;
+                                    this.$emit('on-result', true, obj.id)
+                                }
+                            })
+                        } else {
+                            addDevice(obj).then(data => {
+                                this.confirmLoading = false;
+                                if (data.success) {
+                                    this.form.resetFields()
+                                    this.visible = false;
+                                    this.$emit('on-result', true, data.content.id)
+                                }
+                            })
+                        }
+
                     }
                 });
             },

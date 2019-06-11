@@ -3,8 +3,14 @@ import Router from 'vue-router'
 import routes from './routers'
 Vue.use(Router)
 
-export default new Router({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes: routes
+const  router= new Router({
+    mode: 'history',
+    base: process.env.BASE_URL,
+    routes: routes
 })
+router.afterEach(to => {
+    window.document.title = to.meta.title
+    // iView.LoadingBar.finish()
+    window.scrollTo(0, 0)
+})
+export default router

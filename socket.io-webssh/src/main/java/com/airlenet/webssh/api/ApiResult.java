@@ -50,9 +50,10 @@ public class ApiResult<T> implements Serializable {
         return r;
     }
 
-    public static ApiResult<Object> error( String msg) {
-        return error(500,msg);
+    public static ApiResult<Object> error(String msg) {
+        return error(500, msg);
     }
+
     public static ApiResult<Object> ok(String msg) {
         ApiResult<Object> r = new ApiResult<Object>();
         r.setSuccess(true);
@@ -70,5 +71,11 @@ public class ApiResult<T> implements Serializable {
         r.setPages(data.getPages());
         r.setCurrent(data.getCurrent());
         return r;
+    }
+
+    public ApiResult<T> total() {
+        if (content instanceof List)
+            this.total = ((List) content).size() * 1L;
+        return this;
     }
 }

@@ -173,7 +173,8 @@ public class JschShell extends Thread {
         Session session = null;
         try {
             Thread.currentThread().getName();
-            session = new JSch().getSession(consoleUsername, consoleIp, consolePort);
+            JSch jSch = new JSch();
+            session = jSch.getSession(consoleUsername, consoleIp, consolePort);
             session.setTimeout(60000);
             session.setUserInfo(new UserInfo() {
                 @Override
@@ -281,10 +282,29 @@ public class JschShell extends Thread {
                     sb = new StringBuffer();
                 }
             }
+
         } catch (JSchException e) {
             logger.error("", e);
         } catch (IOException e) {
             logger.error("", e);
+        } finally {
+
+            if (printWriter != null)
+                printWriter.close();
+            if (stdout != null) {
+                try {
+                    stdout.close();
+                } catch (IOException e) {
+                    logger.error("close", e);
+                }
+            }
+            if (session != null){
+                if(session.isConnected()){
+                    session.disconnect();
+                }
+            }
+            if (channel != null)
+                channel.disconnect();
         }
     }
 

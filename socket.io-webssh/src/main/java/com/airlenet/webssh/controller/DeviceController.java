@@ -4,6 +4,8 @@ import com.airlenet.webssh.api.ApiResult;
 import com.airlenet.webssh.entity.DeviceEntity;
 import com.airlenet.webssh.service.CacheService;
 import com.airlenet.webssh.service.DeviceService;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,11 +28,18 @@ public class DeviceController {
     @GetMapping("list")
     public ApiResult<List<DeviceEntity>> list(DeviceEntity deviceEntity,
                                               @RequestParam(defaultValue = "1") int pageNum,
-                                              @RequestParam(defaultValue = "10") int pageSize, HttpServletRequest req) {
+                                              @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "")String query,
+             HttpServletRequest req) {
 
         Page<DeviceEntity> page = new Page<DeviceEntity>(pageNum, pageSize);
+        QueryWrapper<DeviceEntity> wrapper = new QueryWrapper(deviceEntity);
+        wrapper.like("name",query);
+        ( wrapper).or().like("ip",query);
+
 //        QueryWrapper<DeviceEntity> queryWrapper = QueryGenerator.initQueryWrapper(deviceEntity, req.getParameterMap());
-        return ApiResult.ok(deviceService.page(page));
+
+        return ApiResult.ok(deviceService.page(page,wrapper));
     }
 
     @PostMapping("add")

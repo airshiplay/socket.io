@@ -3,27 +3,27 @@ package com.airlenet.webssh.shell.rtty;
 import com.airlenet.webssh.service.CacheService;
 import com.airlenet.webssh.service.DeviceService;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpSession;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 @ServerEndpoint(value = "/ws", configurator = WebsshConfigurator.class)
 @Slf4j
 public class RttyWebsocket {
+    private static Logger logger = LoggerFactory.getLogger(RttyWebsocket.class);
     @Autowired
     private DeviceService deviceService;
     @Autowired
@@ -32,30 +32,43 @@ public class RttyWebsocket {
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) throws Exception {
         Map<String, List<String>> requestParameterMap = session.getRequestParameterMap();
-        HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
         boolean device = isDevice(session);
+        session.getUserProperties().put("device", device);
         String uuid = getDeviceId(session);
-        String sessionId = session.getId();
-        RttyConnect rttyConnect = new RttyConnect(uuid, session);
-
+        session.getUserProperties().put("uuid", uuid);
         if (device) {
+            logger.info("device receive text: open devId {}",uuid);
             String desc = requestParameterMap.get("description").get(0);
-            RttyDevice rttyDevice = cacheService.putRttyDevice(uuid, new RttyDevice(rttyConnect, desc, null));
-            long keepalive = Long.parseLong(requestParameterMap.get("keepalive").get(0));
-
+            RttyDevice rttyDevice = cacheService.putRttyDevice(uuid, new RttyDevice(uuid, session, desc, null));
+            long keepalive = Long.parseLong(requestParameterMap.get("keepalive").get(0))*3;
+            rttyDevice.keepAlive(keepalive);
+            session.getContainer().setDefaultMaxSessionIdleTimeout(keepalive*1000);
         } else {
-            RttyUser rttyUser = new RttyUser(rttyConnect);
+            logger.info("user receive text: open devId {}",uuid);
+            RttyUser rttyUser = new RttyUser(uuid, session);
             RttyDevice rttyDevice = cacheService.getRttyDevice(uuid);
             if (rttyDevice == null) {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("type", "login");
+                jsonObject.put("err", 1);
+                jsonObject.put("msg", "offline");
+                session.getBasicRemote().sendText(jsonObject.toJSONString());
+                logger.info("Device {} offline", uuid);
                 return;
             }
 
+            Integer devsid = rttyDevice.getFreeSid();
+            rttyUser.setSid(devsid);
             RttyDeviceUserSession rttyDeviceUserSession = new RttyDeviceUserSession();
             rttyDeviceUserSession.setRttyDevice(rttyDevice);
             rttyDeviceUserSession.setRttyUser(rttyUser);
-            rttyDevice.getDeviceUserSession().put(rttyUser.getSid(), rttyDeviceUserSession);
-            session.getUserProperties().put("sid", rttyUser.getSid());
-            rttyDevice.getDeviceConnect().sendText("{\"type\":\"login\",\"sid\":\"" + rttyUser.getSid() + "\"}");
+            rttyDevice.putUserSession(devsid, rttyDeviceUserSession);
+//            rttyDevice.getDeviceUserSession().put(devsid, rttyDeviceUserSession);
+            session.getUserProperties().put("sid", devsid);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("type", "login");
+            jsonObject.put("sid", devsid);
+            rttyDevice.sendText(jsonObject.toJSONString());
         }
     }
 
@@ -66,17 +79,22 @@ public class RttyWebsocket {
         String uuid = getDeviceId(session);
         com.alibaba.fastjson.JSONObject parse = JSON.parseObject(text);
         RttyDevice rttyDevice = cacheService.getRttyDevice(uuid);
+        if(rttyDevice ==null){
+            return;
+        }
         if (device) {//收到设备消息，发向用户
+            logger.info("device receive text:" + " message:" + text);
             String type = parse.getString("type");
             if ("cmd".equals(type)) {
 
             } else {
                 int devSid = parse.getIntValue("sid");
 
-                rttyDevice.getDeviceUserSession().get(devSid).getRttyUser().getConnect().sendText(text);
+                rttyDevice.getUserSession(devSid).sendText(text);
             }
         } else {//收到用户消息，发向设备
-            rttyDevice.getDeviceConnect().sendText(text);
+            logger.info("user receive text:" + " message:" + text);
+            rttyDevice.sendText(text);
         }
     }
 
@@ -85,25 +103,39 @@ public class RttyWebsocket {
         boolean device = isDevice(session);
         String uuid = getDeviceId(session);
         RttyDevice rttyDevice = cacheService.getRttyDevice(uuid);
+        if(rttyDevice ==null){
+            return;
+        }
         if (device) {//收到设备消息，发向用户
             Integer devsid = new Integer(message[0]);
             byte[] dest = new byte[message.length - 1];
             System.arraycopy(message, 1, dest, 0, dest.length);
-            rttyDevice.getDeviceUserSession().get(devsid).getRttyUser().getConnect().sendBinary(ByteBuffer.wrap(dest));
+
+            ByteBuffer byteBuffer = ByteBuffer.wrap(dest);
+            logger.info("device receive Binary:" + devsid + " message:" + new String(byteBuffer.array()));
+            rttyDevice.getUserSession(devsid).sendBinary(byteBuffer);
         } else {//收到用户消息，发向设备
             Integer sid = (Integer) session.getUserProperties().get("sid");
-            ByteBuffer allocateDirect = ByteBuffer.allocate(message.length + 1);
-            allocateDirect.put(sid.byteValue());
-            allocateDirect.put(message);
-            rttyDevice.getDeviceUserSession().get(sid).getRttyDevice().getDeviceConnect().sendBinary(allocateDirect);
+
+            byte[] dest = new byte[message.length + 1];
+            dest[0] = sid.byteValue();
+            System.arraycopy(message, 0, dest, 1, message.length);
+            ByteBuffer byteBuffer = ByteBuffer.wrap(dest);
+
+            logger.info("user receive Binary:" + sid + " message:" + new String(message));
+
+            rttyDevice.sendBinary(byteBuffer);
+
         }
     }
 
     @OnMessage
     public synchronized void onPong(Session session, PongMessage message) {
         try {
-            session.getBasicRemote().sendPong(message.getApplicationData());
-        } catch (IOException e) {
+            boolean device = isDevice(session);
+            String uuid = getDeviceId(session);
+//            session.getBasicRemote().sendPong(message.getApplicationData());
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -113,16 +145,34 @@ public class RttyWebsocket {
         log.error("onClose {} {}", session.getRequestParameterMap(), closeReason.toString());
         boolean device = isDevice(session);
         String uuid = getDeviceId(session);
+        RttyDevice rttyDevice = cacheService.getRttyDevice(uuid);
+        if(rttyDevice ==null){
+            return;
+        }
         if (device) {
-//            cacheService.clearRttyDevice(uuid);
+            cacheService.clearRttyDevice(uuid);
+            Set<Map.Entry<Integer, RttyDeviceUserSession>> entrySet = rttyDevice.getDeviceUserSession().entrySet();
+            Iterator<Map.Entry<Integer, RttyDeviceUserSession>> iterator = entrySet.iterator();
+            while (iterator.hasNext()){
+                Map.Entry<Integer, RttyDeviceUserSession> userSessionEntry = iterator.next();
+                userSessionEntry.getValue().logout();
+            }
+        } else {
+            Integer sid = (Integer) session.getUserProperties().get("sid");
+            RttyDeviceUserSession userSession = rttyDevice.getUserSession(sid);
+            if (userSession != null) {
+                userSession.close();
+                rttyDevice.clearUserSession(sid);
+            }
+
         }
     }
 
     @OnError
     public void onError(Session session, Throwable error) {
-        log.error("onError {} {}", session.getRequestParameterMap(), error);
         boolean device = isDevice(session);
         String uuid = getDeviceId(session);
+        log.error("onError {} {} {} {}",device,uuid, session.getRequestParameterMap(), error);
 
     }
 
@@ -135,24 +185,4 @@ public class RttyWebsocket {
         return session.getRequestParameterMap().get("devid").get(0);
     }
 
-    public ByteBuffer read(InputStream istream) throws IOException {
-        int bufferSize = 4096;
-        int writeBufferSize = 4096;
-        ReadableByteChannel source = Channels.newChannel(istream);
-        ByteArrayOutputStream ostream = new ByteArrayOutputStream(bufferSize);
-        WritableByteChannel destination = Channels.newChannel(ostream);
-        ByteBuffer buffer = ByteBuffer.allocateDirect(writeBufferSize);
-        while (source.read(buffer) != -1) {
-            buffer.flip();
-            while (buffer.hasRemaining()) {
-                destination.write(buffer);
-            }
-            buffer.clear();
-        }
-        ByteBuffer wrap = ByteBuffer.wrap(ostream.toByteArray());
-
-        source.close();
-        destination.close();
-        return wrap;
-    }
 }

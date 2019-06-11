@@ -1,18 +1,24 @@
 package com.airlenet.webssh.service.impl;
 
-import com.airlenet.webssh.shell.rtty.RttyDevice;
 import com.airlenet.webssh.service.CacheService;
+import com.airlenet.webssh.shell.rtty.RttyDevice;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class CacheServiceImpl implements CacheService {
+    Map<String, RttyDevice> rttyDeviceMap = new HashMap<>();
+
     @Override
-    @CachePut(value = "rttyDevice", key = "#uuid")
-    public RttyDevice putRttyDevice(String uuid, RttyDevice rttyDevice) {
-        return rttyDevice;
+    public List<RttyDevice> getRttyDeviceList() {
+        return new ArrayList<>(rttyDeviceMap.values());
     }
 
     @Cacheable(value = "rttyDevice", key = "#uuid")
@@ -21,26 +27,17 @@ public class CacheServiceImpl implements CacheService {
         return null;
     }
 
+    @Override
+    @CachePut(value = "rttyDevice", key = "#uuid")
+    public RttyDevice putRttyDevice(String uuid, RttyDevice rttyDevice) {
+        rttyDeviceMap.put(uuid, rttyDevice);
+        return rttyDevice;
+    }
+
     @CacheEvict(value = "rttyDevice", key = "#uuid")
     @Override
     public RttyDevice clearRttyDevice(String uuid) {
-        return null;
-    }
-
-    @Override
-    @CachePut(value = "rttySessionDevice", key = "#sessionId")
-    public RttyDevice putRttyDeviceSessionId(String sessionId, RttyDevice rttyDevice) {
-        return rttyDevice;
-    }
-    @Cacheable(value = "rttySessionDevice", key = "#sessionId")
-    @Override
-    public RttyDevice getRttyDeviceSessionId(String sessionId) {
-        return null;
-    }
-
-    @CacheEvict(value = "rttySessionDevice", key = "#sessionId")
-    @Override
-    public RttyDevice clearRttyDeviceSessionId(String sessionId) {
+        rttyDeviceMap.remove(uuid);
         return null;
     }
 }
