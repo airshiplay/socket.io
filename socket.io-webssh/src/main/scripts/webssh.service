@@ -1,0 +1,19 @@
+[Unit]
+Description=webssh service
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+
+WorkingDirectory=/usr/local/webssh/
+
+ExecStart=/usr/local/webssh/webssh.jar
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s QUIT $MAINPID
+
+PrivateTmp=false
+SuccessExitStatus=143
+
+
+[Install]
+WantedBy=multi-user.target

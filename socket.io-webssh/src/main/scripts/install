@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+cat > /usr/lib/systemd/system/webssh.service << EOF
+[Unit]
+Description=webssh service
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+User=webssh
+ExecStart=/usr/local/webssh/webssh.jar
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+chmod 640 /usr/lib/systemd/system/webssh.service
+
+systemctl daemon-reload
+systemctl enable webssh.service

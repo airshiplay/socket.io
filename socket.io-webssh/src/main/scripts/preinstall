@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+echo "preparing ${project.name}"
+#webssh_user = webssh
+#webssh_group = websshgroup
+getent group %{webssh_group} > /dev/null || groupadd -r %{webssh_group}
+getent passwd %{webssh_user} > /dev/null || \
+    useradd -r -d %{webss_home} -g %{webssh_group} \
+    -s /sbin/nologin -c "web ssh server" %{webssh_user}
+exit 0

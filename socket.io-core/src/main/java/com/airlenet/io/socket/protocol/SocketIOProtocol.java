@@ -23,10 +23,11 @@
 package com.airlenet.io.socket.protocol;
 
 import com.airlenet.io.socket.server.SocketIOProtocolException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationConfig;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.alibaba.fastjson.JSON;
+//import com.fasterxml.jackson.core.JsonProcessingException;
+//import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.fasterxml.jackson.databind.SerializationConfig;
+//import com.fasterxml.jackson.databind.SerializationFeature;
 
 
 import java.io.IOException;
@@ -47,11 +48,11 @@ public final class SocketIOProtocol
 {
     private static final Logger LOGGER = Logger.getLogger(SocketIOProtocol.class.getName());
 
-    private static final ObjectMapper mapper = new ObjectMapper();
-    static {
-        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-//        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-    }
+//    private static final ObjectMapper mapper = new ObjectMapper();
+//    static {
+//        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+////        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+//    }
 
     public static final String DEFAULT_NAMESPACE = "/";
 
@@ -221,9 +222,9 @@ public final class SocketIOProtocol
     {
         try
         {
-            return mapper.writeValueAsString(o);
+            return JSON.toJSONString(o);
         }
-        catch (JsonProcessingException e)
+        catch (Exception e)
         {
             throw new SocketIOProtocolException("Cannot convert object to JSON", e);
         }
@@ -237,9 +238,9 @@ public final class SocketIOProtocol
             if(s == null || s.isEmpty())
                 return null;
 
-            return mapper.readValue(s, Object.class);
+            return JSON.parseObject(s, Object.class);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             throw new SocketIOProtocolException("Cannot parse JSON", e);
         }

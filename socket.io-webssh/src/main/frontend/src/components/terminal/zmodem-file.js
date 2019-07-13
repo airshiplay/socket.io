@@ -4,6 +4,15 @@ function ZmodemFile(socket, term, opt) {
     this.term = term;
     this.cache = [];
     this.buffer = [];
+    let zsentry = new Zmodem.Sentry( {
+        to_terminal(octets) {  },  //i.e. send to the terminal
+
+        sender(octets) {   },  //i.e. send to the ZMODEM peer
+
+        on_detect(detection) {   },  //for when Sentry detects a new ZMODEM
+
+        on_retract() {  },  //for when Sentry retracts a Detection
+    } );
     this.to_term = function(octets) {
         this.term.write(Buffer.from(octets).toString());
     }

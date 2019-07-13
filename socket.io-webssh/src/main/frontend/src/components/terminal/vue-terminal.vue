@@ -35,14 +35,16 @@
 <script>
     /* eslint-disable */
     import * as io from 'socket.io-client'
+    import {Zmodem} from 'zmodem.js'
     import "xterm/dist/xterm.css";
     import * as fit from 'xterm/lib/addons/fit/fit'
+    // import * as zmodem from 'xterm/lib/addons/zmodem/zmodem'
     import {Terminal} from 'xterm'
     import "./VueTerminal.css"
     import ZmodemFile from './zmodem-file'
-    import RttyFile from './rtty-file'
 
     Terminal.applyAddon(fit)
+    Terminal.applyAddon(zmodem)
     export default {
         name: "VueTerminal",
         props: {
@@ -93,45 +95,41 @@
                             ;
                     }
                 })
-                this.rttyFile = new RttyFile(socket, term, {
-                    on_detect: (t) => {
-                        if (t == 'r')
-                            this.upfile.modal = true;
-                        else if (t == 's')
-                            ;
-                    }
-                });
-                term.on('data', function (data) {
-                    if (that.zmodemFile.state != '') {
-                        if (data.length == 1) {
-                            let key = data.charCodeAt(0);
+                let zsentry = new Zmodem.Sentry( {
+                    to_terminal(octets) {   },  //i.e. send to the terminal
 
-                            /* Ctrl + C, Esc */
-                            if (key == 3 || key == 27) {
-                                if (that.zmodemFile.state == 'recving') {
-                                    that.zmodemFile.abortRecv();
-                                } else {
-                                    that.upfile.modal = false;
+                    sender(octets) {  },  //i.e. send to the ZMODEM peer
 
-                                    if (that.zmodemFile.state == 'send_pending')
-                                        that.zmodemFile.sendEof();
-                                    else
-                                        that.zmodemFile.abort();
-                                }
-                            }
+                    on_detect(detection) {
+                        //Do this if we determine that what looked like a ZMODEM session
+                        //is actually not meant to be ZMODEM.
+                        if (no_good) {
+                            detection.deny();
+                            return;
                         }
-                        return;
-                    }
+                    },  //for when Sentry detects a new ZMODEM
+
+                    on_retract() {  },  //for when Sentry retracts a Detection
+                } );
+
+//We have to configure whatever gives us new input to send that
+//input to zsentry.
+//
+//EXAMPLE: From web browsers that use WebSocket …
+//
+//                 ws.addEventListener("message", function(evt) {
+//                     zsentry.consume(evt.data);
+//                 } );
+                term.on('data', function (data) {
                     socket.emit('data', data)
                 })
                 socket.on('connect', function () {
                     socket.emit('geometry', term.cols, term.rows)
                 })
                 socket.on('data', function (data) {
-                    var consume = that.zmodemFile.consume(data);
-                    if (!consume) {
-                        term.write(data)
-                    }
+                    zsentry.consume(evt.data);
+                    term.write(data)
+
                 })
                 socket.on('setTerminalOpts', function (data) {
                     term.setOption('cursorBlink', data.cursorBlink)
