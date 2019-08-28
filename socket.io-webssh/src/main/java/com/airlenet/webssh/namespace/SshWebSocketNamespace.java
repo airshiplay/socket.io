@@ -1,7 +1,7 @@
 package com.airlenet.webssh.namespace;
 
 import com.airlenet.io.socket.server.transport.websocket.WebsocketIOServlet;
-import com.airlenet.webssh.shell.SshConnection;
+import com.airlenet.webssh.shell.DeviceSshConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +19,9 @@ public class SshWebSocketNamespace {
     WebsocketIOServlet websocketIOServlet;
 
     @Autowired
-    SshConnection sshConnection;
+    DeviceSshConnection deviceSshConnection;
     @PostConstruct
     public void sshNamespace() {
-        websocketIOServlet.of(namespace).on(sshConnection);
+        websocketIOServlet.of(namespace).on(deviceSshConnection);
     }
 }

@@ -106,12 +106,12 @@
                 visible: false, confirmLoading: false, formLayout: 'horizontal',
                 edit: false,
                 form: this.$form.createForm(this),
-                passwordValidate: true
+                passwordValidate: false
             }
         },
         methods: {
             showModal() {
-                this.passwordValidate = true
+                this.passwordValidate = false
                 this.title = 'Add Device'
                 this.edit = false;
                 this.visible = true
@@ -158,6 +158,9 @@
                                     this.visible = false;
                                     this.$emit('on-result', true, obj.id)
                                 }
+                            }).catch(err=>{
+                                this.confirmLoading = false;
+
                             })
                         } else {
                             addDevice(obj).then(data => {
@@ -167,6 +170,8 @@
                                     this.visible = false;
                                     this.$emit('on-result', true, data.content.id)
                                 }
+                            }).catch(err=>{
+                                this.confirmLoading = false;
                             })
                         }
 

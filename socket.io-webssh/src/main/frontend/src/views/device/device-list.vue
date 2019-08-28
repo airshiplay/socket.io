@@ -60,22 +60,14 @@
         scopedSlots: {customRender: 'name'},
     },
         {
-            title:'Description',
-            dataIndex: 'desc',
+            title: 'IP',
+            dataIndex: 'ip',
+            width: '100px',
         },
         {
-        title: 'IP',
-        dataIndex: 'ip',
-        width: '100px',
-    },
-        //     {
-        //     title: 'port',
-        //     dataIndex: 'port',
-        // },
-        // {
-        //     title: 'username',
-        //     dataIndex: 'username',
-        // },
+            title: 'Description',
+            dataIndex: 'desc',
+        },
         {
             title: 'operation',
             dataIndex: 'operation',
@@ -91,7 +83,7 @@
         data() {
             return {
                 data: [],
-                pagination: {showSizeChanger:true,showQuickJumper:true},
+                pagination: {showSizeChanger: true, showQuickJumper: true},
                 queryText: '',
                 loading: false,
                 columns,

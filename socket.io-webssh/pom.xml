@@ -38,6 +38,16 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jersey</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>ch.ethz.ganymed</groupId>
             <artifactId>ganymed-ssh2</artifactId>
             <version>build210</version>
@@ -227,6 +237,10 @@
                     <layout>JAR</layout>
                     <classifier>exec</classifier>
                     <executable>true</executable>
+                    <embeddedLaunchScriptProperties>
+
+                    </embeddedLaunchScriptProperties>
+
                 </configuration>
                 <executions>
                     <execution>
@@ -388,6 +402,25 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sun.winsw</groupId>
+                    <artifactId>winsw</artifactId>
+                    <version>1.18</version>
+                    <classifier>bin</classifier>
+                    <type>exe</type>
+                </dependency>
+            </dependencies>
+            <build>
 
+            </build>
+        </profile>
     </profiles>
 </project>

@@ -11,19 +11,19 @@
                         <a-icon type="setting"/>
                         Menu
                     </a>
-                    <a-menu slot="overlay">
-                        <a-menu-item>
-                            <a-icon type="user"/>
-                            Start Log
-                        </a-menu-item>
-                        <a-menu-item>
-                            <a-icon type="user"/>
-                            Download Log
-                        </a-menu-item>
-                        <a-menu-item>
-                            <a href="javascript:;">3rd menu item</a>
-                        </a-menu-item>
-                    </a-menu>
+                    <!--<a-menu slot="overlay">-->
+                        <!--<a-menu-item>-->
+                            <!--<a-icon type="user"/>-->
+                            <!--Start Log-->
+                        <!--</a-menu-item>-->
+                        <!--<a-menu-item>-->
+                            <!--<a-icon type="user"/>-->
+                            <!--Download Log-->
+                        <!--</a-menu-item>-->
+                        <!--<a-menu-item>-->
+                            <!--<a href="javascript:;">3rd menu item</a>-->
+                        <!--</a-menu-item>-->
+                    <!--</a-menu>-->
                 </a-dropdown>
             </div>
             <div id="footer"></div>
@@ -35,7 +35,7 @@
 <script>
     /* eslint-disable */
     import * as io from 'socket.io-client'
-    import {Zmodem} from 'zmodem.js'
+    // import {Zmodem} from 'zmodem.js'
     import "xterm/dist/xterm.css";
     import * as fit from 'xterm/lib/addons/fit/fit'
     // import * as zmodem from 'xterm/lib/addons/zmodem/zmodem'
@@ -44,7 +44,7 @@
     import ZmodemFile from './zmodem-file'
 
     Terminal.applyAddon(fit)
-    Terminal.applyAddon(zmodem)
+    // Terminal.applyAddon(zmodem)
     export default {
         name: "VueTerminal",
         props: {
@@ -87,30 +87,30 @@
                     query: this.query
                 });
                 this.socket = socket
-                this.zmodemFile = new ZmodemFile(socket, term, {
-                    on_detect: (t) => {
-                        if (t == 'r')
-                            this.upfile.modal = true;
-                        else if (t == 's')
-                            ;
-                    }
-                })
-                let zsentry = new Zmodem.Sentry( {
-                    to_terminal(octets) {   },  //i.e. send to the terminal
-
-                    sender(octets) {  },  //i.e. send to the ZMODEM peer
-
-                    on_detect(detection) {
-                        //Do this if we determine that what looked like a ZMODEM session
-                        //is actually not meant to be ZMODEM.
-                        if (no_good) {
-                            detection.deny();
-                            return;
-                        }
-                    },  //for when Sentry detects a new ZMODEM
-
-                    on_retract() {  },  //for when Sentry retracts a Detection
-                } );
+                // this.zmodemFile = new ZmodemFile(socket, term, {
+                //     on_detect: (t) => {
+                //         if (t == 'r')
+                //             this.upfile.modal = true;
+                //         else if (t == 's')
+                //             ;
+                //     }
+                // })
+                // let zsentry = new Zmodem.Sentry( {
+                //     to_terminal(octets) {   },  //i.e. send to the terminal
+                //
+                //     sender(octets) {  },  //i.e. send to the ZMODEM peer
+                //
+                //     on_detect(detection) {
+                //         //Do this if we determine that what looked like a ZMODEM session
+                //         //is actually not meant to be ZMODEM.
+                //         if (no_good) {
+                //             detection.deny();
+                //             return;
+                //         }
+                //     },  //for when Sentry detects a new ZMODEM
+                //
+                //     on_retract() {  },  //for when Sentry retracts a Detection
+                // } );
 
 //We have to configure whatever gives us new input to send that
 //input to zsentry.
@@ -121,13 +121,16 @@
 //                     zsentry.consume(evt.data);
 //                 } );
                 term.on('data', function (data) {
+                    if(socket.disconnected){
+                        socket.connect()
+                    }
                     socket.emit('data', data)
                 })
                 socket.on('connect', function () {
                     socket.emit('geometry', term.cols, term.rows)
                 })
                 socket.on('data', function (data) {
-                    zsentry.consume(evt.data);
+                    // zsentry.consume(evt.data);
                     term.write(data)
 
                 })
@@ -138,6 +141,7 @@
                     term.setOption('bellStyle', data.bellStyle)
                 })
 
+                socket.on('title',this.onTitle)
                 socket.on('status', this.onStatus)
                 socket.on('ssherror', this.onSSHError)
                 socket.on('headerBackground', this.onHeaderBackground)
@@ -167,7 +171,11 @@
                         'WEBSOCKET SERVER DISCONNECTED: ' + err
                 }
                 this.socket.io.reconnection(false)
-            }, onStatusBackground(data) {
+            },
+            onTitle(data){
+                window.document.title = data
+            },
+            onStatusBackground(data) {
                 this.dom.status.style.backgroundColor = data
             }, onFooter(data) {
                 this.dom.footer.innerHTML = data

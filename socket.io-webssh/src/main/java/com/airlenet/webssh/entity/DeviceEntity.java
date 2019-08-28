@@ -6,14 +6,18 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 @TableName("ssh_device")
 @Data
 public class DeviceEntity {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     private String identifiy;
+    @NotNull
     private String name;
     private String type;
+    @NotNull
     private String ip;
     private Integer port;
     private String username;

@@ -88,10 +88,15 @@ public class JschShell extends Thread {
                         userMsg = userMsg + msg;
                     }
                 } else {
-                    if (printWriter != null) {
-                        printWriter.write(msg);
-                        printWriter.flush();
+                    if (channel != null && channel.isClosed()) {
+                        close();
+                    } else {
+                        if (printWriter != null) {
+                            printWriter.write(msg);
+                            printWriter.flush();
+                        }
                     }
+
                 }
                 return "OK";
             }
@@ -273,7 +278,7 @@ public class JschShell extends Thread {
             int len = 0;
             StringBuffer sb = new StringBuffer();
             StringWriter stringWriter = new StringWriter();
-            while ((len = stdout.read(buf)) > 0) {
+            while ((len = stdout.read(buf)) > 0 && channel.isConnected()) {
                 if (stdout.available() > 0) {
                     sb.append(new String(buf, 0, len));
                 } else {
@@ -298,13 +303,16 @@ public class JschShell extends Thread {
                     logger.error("close", e);
                 }
             }
-            if (session != null){
-                if(session.isConnected()){
+            if (session != null) {
+                if (session.isConnected()) {
                     session.disconnect();
                 }
             }
             if (channel != null)
                 channel.disconnect();
+            if(socket!=null){
+                socket.disconnect(true);
+            }
         }
     }
 

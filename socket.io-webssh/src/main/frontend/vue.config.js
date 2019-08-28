@@ -42,7 +42,7 @@ module.exports = {
     devServer: {
         open: true,
         host: '0.0.0.0',
-        port: 8080,
+        port: 8081,
         https: false,
         hotOnly: false,
         // proxy: 'http://127.0.0.1:8081',
@@ -50,6 +50,7 @@ module.exports = {
             '/api': {
                 target: 'http://127.0.0.1:8080',
                 ws: true,
+                secure: false,
                 changOrigin: true,
                 pathRewrite: {
                     '^/api/': '/api/',
