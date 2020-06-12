@@ -33,7 +33,7 @@
 </template>
 
 <script>
-    /* eslint-disable */
+/* eslint-disable */
     import * as io from 'socket.io-client'
     // import {Zmodem} from 'zmodem.js'
     import "xterm/dist/xterm.css";

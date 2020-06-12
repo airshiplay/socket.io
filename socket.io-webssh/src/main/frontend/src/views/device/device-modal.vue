@@ -64,7 +64,8 @@
                     label="Password"
                     :label-col="{ span: 8 }"
                     :wrapper-col="{ span: 12 }">
-                <a-input type="password"
+                <a-input
+type="password"
                         v-decorator="['password',{rules: [{ required: passwordValidate, message: 'Please input your device ip!' }]}]"/>
             </a-form-item>
             <a-form-item
@@ -78,7 +79,7 @@
 </template>
 
 <script>
-    /* eslint-disable */
+/* eslint-disable */
     import AFormItem from "ant-design-vue/es/form/FormItem";
     import {addDevice, editDevice} from "@api/api";
     import NodeRSA from 'node-rsa';

@@ -2,7 +2,7 @@ FROM openjdk:8-jdk-alpine
 VOLUME /tmp
 EXPOSE 8080
 
-COPY maven/socket.io-webssh-1.0.0-SNAPSHOT-exec.jar app.jar
+COPY maven/socket.io-webssh-1.0.0-exec.jar app.jar
 
 ENTRYPOINT ["java","-jar","/app.jar"]
 

@@ -1,5 +1,6 @@
-* Wed Jan 21 2019 airlenet <airlenet@163.com>
-- XXX
-
-* Wed Jan 21 2019 airlenet <airlenet@163.com>
-- XXX
+* Fri Jun 12 2020 airlenet <airlenet@163.com>
+- 发布1.0.0版本
+- 默认安装到/usr/local/webssh 目录。
+- 服务端口默认为18081，访问路径http://ip:18081，可在/usr/local/webssh/config/application.properties文件中修改服务端口
+- 支持自定义连接IP，访问路径为http://ip:18081/connect/127.0.0.1
+- 支持Rtty连接，端口与服务端口相同18081，其客户端详见 https://github.com/zhaojh329/rtty

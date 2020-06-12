@@ -33,25 +33,25 @@
 </template>
 
 <script>
-    export default {
-        name: "main1", data() {
-            return {
-                currentMenu: this.$route.name
-            }
-        }, methods: {
-            handleMenuClick(e) {
-                this.currentMenu = e.key
-                let {name, params, query} = {}
-                name = this.currentMenu
-                this.$router.push({
-                    name,
-                    params,
-                    query
-                })
-            }
-
+export default {
+    name: "main1", data() {
+        return {
+            currentMenu: this.$route.name
         }
+    }, methods: {
+        handleMenuClick(e) {
+            this.currentMenu = e.key
+            let {name, params, query} = {}
+            name = this.currentMenu
+            this.$router.push({
+                name,
+                params,
+                query
+            })
+        }
+
     }
+}
 </script>
 
 <style>

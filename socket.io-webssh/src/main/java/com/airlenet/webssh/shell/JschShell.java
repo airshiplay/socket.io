@@ -25,7 +25,7 @@ public class JschShell extends Thread {
     String consoleUsername;
     String consolePassword;
 
-
+    public boolean autoAuth=true;
     Lock lock = new ReentrantLock();
 
     private StepEnum stepEnum;
@@ -177,6 +177,10 @@ public class JschShell extends Thread {
     public void run() {
         Session session = null;
         try {
+            startSend();
+            if(StringUtils.isEmpty(consolePassword)){
+                autoAuth=false;
+            }
             Thread.currentThread().getName();
             JSch jSch = new JSch();
             session = jSch.getSession(consoleUsername, consoleIp, consolePort);
@@ -194,7 +198,7 @@ public class JschShell extends Thread {
 
                 @Override
                 public boolean promptPassword(String s) {
-                    if (StringUtils.isEmpty(consolePassword)) {
+                    if (!autoAuth) {
                         try {
                             socket.emit("data", s + ":");
                             stepEnum = StepEnum.promptPassword;
@@ -203,6 +207,7 @@ public class JschShell extends Thread {
                                 userMsg = "";
                                 condition.await();
                                 consolePassword = userMsg;
+                                autoAuth=false;
                                 return true;
                             } catch (InterruptedException e) {
                                 logger.error("", e);
@@ -315,23 +320,25 @@ public class JschShell extends Thread {
             }
         }
     }
-
+    public void startSend()throws SocketIOException {
+        socket.emit("title", "ssh://" + consoleIp);
+        socket.emit("footer", "ssh://" + consoleUsername + "@" + consoleIp + ":" + consolePort);
+        socket.emit("status", "SSH CONNECTITING");
+        socket.emit("headerBackground", "darkorange");
+        socket.emit("statusBackground", "darkorange");
+        socket.emit("allowreauth", false);
+    }
     public void send() throws SocketIOException {
+        socket.emit("title", "ssh://" + consoleIp);
+        socket.emit("footer", "ssh://" + consoleUsername + "@" + consoleIp + ":" + consolePort);
+
         socket.emit("menu", "<a id=\"logBtn\"><i class=\"fas fa-clipboard fa-fw\"></i> Start Log</a><a id=\"downloadLogBtn\"><i class=\"fas fa-download fa-fw\"></i> Download Log</a>");
 
-        socket.emit("allowreauth", true);
 
         socket.emit("setTerminalOpts", "{\"cursorBlink\":true,\"scrollback\":10000,\"tabStopWidth\":8,\"bellStyle\":\"sound\"}");
 
-        socket.emit("title", "ssh://" + consoleIp);
-
         socket.emit("headerBackground", "green");
 
-        socket.emit("status", "SSH CONNECTION ESTABLISHED");
-
-        socket.emit("statusBackground", "green");
-
-        socket.emit("footer", "ssh://" + consoleUsername + "@" + consoleIp + ":" + consolePort);
         socket.emit("status", "SSH CONNECTION ESTABLISHED");
 
         socket.emit("statusBackground", "green");

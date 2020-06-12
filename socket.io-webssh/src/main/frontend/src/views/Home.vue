@@ -6,12 +6,12 @@
 
 <script>
 
-    import DeviceList from "./device/device-list";
+import DeviceList from "./device/device-list";
 
-    export default {
-        name: 'home',
-        components: {DeviceList},
-    }
+export default {
+    name: 'home',
+    components: {DeviceList},
+}
 </script>
 <style>
 

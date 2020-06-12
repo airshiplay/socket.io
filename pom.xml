@@ -2,11 +2,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.airlenet.io.socket</groupId>
+    <groupId>com.airlenet.websocket</groupId>
     <artifactId>socket.io</artifactId>
     <packaging>pom</packaging>
     <name>socket.io</name>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <url>https://github.com/airshiplay/socket.io</url>
     <description>socket.io java spring</description>
     <modules>
@@ -73,7 +73,16 @@
         <url>https://github.com/airshiplay/socket.io</url>
         <tag>HEAD</tag>
     </scm>
-
+    <repositories>
+        <repository>
+            <id>spring-releases</id>
+            <name>Spring Releases</name>
+            <url>https://repo.spring.io/libs-release</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
     <build>
         <plugins>
             <plugin>

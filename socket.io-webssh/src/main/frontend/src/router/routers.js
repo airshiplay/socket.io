@@ -34,7 +34,7 @@ export default [
         component: () => import(/* webpackChunkName: "console" */ '@views/Console.vue')
     },
     {
-        path: '/ssh/host/:host',
+        path: '/connect/:host',
         name: 'console',
         meta: {title:'Direct Terminal',},
         component: () => import(/* webpackChunkName: "console" */ '@views/Console.vue')

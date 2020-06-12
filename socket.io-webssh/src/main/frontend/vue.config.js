@@ -48,7 +48,8 @@ module.exports = {
         // proxy: 'http://127.0.0.1:8081',
         proxy: {
             '/api': {
-                target: 'http://127.0.0.1:8080',
+                target: 'http://127.0.0.1:18081',
+                // target: 'http://172.19.104.38:18080',
                 ws: true,
                 secure: false,
                 changOrigin: true,
@@ -57,7 +58,8 @@ module.exports = {
                 }
             },
             '/socket.io': {
-                target: 'http://127.0.0.1:8080',
+                target: 'http://127.0.0.1:18081',
+                // target: 'http://172.19.104.38:18080',
                 ws: true,
                 changOrigin: true,
                 pathRewrite: {
@@ -65,7 +67,7 @@ module.exports = {
                 }
             },
             '/ws': {
-                target: 'http://127.0.0.1:8080',
+                target: 'http://127.0.0.1:18081',
                 ws: true,
                 changOrigin: true,
                 pathRewrite: {

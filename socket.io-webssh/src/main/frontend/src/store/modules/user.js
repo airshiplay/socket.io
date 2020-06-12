@@ -45,7 +45,7 @@ const user = {
                         Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
                         commit('SET_TOKEN', result.token)
                         commit('SET_INFO', userInfo)
-                        commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
+                        commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: '' })
                         commit('SET_AVATAR', userInfo.avatar)
                         resolve()
                     }else{

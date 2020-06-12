@@ -1,4 +1,27 @@
-#!/bin/sh
+#!/bin/bash -xv
 set -e
 
+sed -i  's/^spring.datasource.url.*$/spring.datasource.url=jdbc:h2:file:\/usr\/local\/webssh\/data\/webssh/' /usr/local/webssh/config/application.properties
+
+chgrp websshgroup /usr/local/webssh
+chown webssh /usr/local/webssh
+
+sudo chattr +i /usr/local/webssh/webssh.jar
+
+
+systemctl daemon-reload
+
+systemctl enable webssh.service
 systemctl start webssh.service
+
+
+echo "${project.name} starting"
+
+echo "http://127.0.0.1:18081"
+
+echo "modify port at /usr/local/webssh/config/application.properties"
+
+echo "systemctl enable|start|restart|status webssh.service "
+
+
+echo "systemctl status webssh.service "

@@ -4,12 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>socket.io</artifactId>
-        <groupId>com.airlenet.io.socket</groupId>
-        <version>1.0.0-SNAPSHOT</version>
+        <groupId>com.airlenet.websocket</groupId>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
     <artifactId>socket.io-webssh</artifactId>
+    <description>socket.io webssh java spring</description>
     <properties>
         <start-class>com.airlenet.webssh.WebSshApplication</start-class>
     </properties>
@@ -33,7 +34,7 @@
             <artifactId>spring-boot-starter-jetty</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.airlenet.io.socket</groupId>
+            <groupId>com.airlenet.websocket</groupId>
             <artifactId>socket.io-spring-boot-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -197,9 +198,9 @@
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.6</version>
+                <version>1.9.1</version>
                 <configuration>
-                    <nodeVersion>v10.15.3</nodeVersion>
+                    <nodeVersion>v10.16.0</nodeVersion>
                     <npmVersion>6.9.0</npmVersion>
                     <workingDirectory>src/main/frontend</workingDirectory>
                     <installDirectory>${project.basedir}</installDirectory>
@@ -211,12 +212,25 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                     </execution>
+                    <!--<execution>-->
+                    <!--<id>npm config registry</id>-->
+                    <!--<goals>-->
+                    <!--<goal>npm</goal>-->
+                    <!--</goals>-->
+                    <!--<phase>generate-resources</phase>-->
+                    <!--<configuration>-->
+                    <!--<arguments>config set registry https://registry.npm.taobao.org </arguments>-->
+                    <!--</configuration>-->
+                    <!--</execution>-->
                     <execution>
                         <id>npm install</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <phase>generate-resources</phase>
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>npm-build</id>
@@ -235,12 +249,8 @@
                 <configuration>
                     <mainClass>${start-class}</mainClass>
                     <layout>JAR</layout>
-                    <classifier>exec</classifier>
                     <executable>true</executable>
-                    <embeddedLaunchScriptProperties>
-
-                    </embeddedLaunchScriptProperties>
-
+                    <classifier>exec</classifier>
                 </configuration>
                 <executions>
                     <execution>
@@ -284,29 +294,23 @@
                 <finalName>webssh</finalName>
                 <plugins>
                     <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                        <configuration>
-                            <executable>true</executable>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>repackage</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>rpm-maven-plugin</artifactId>
                         <version>2.2.0</version>
                         <extensions>true</extensions>
+                        <!--<executions>-->
+                        <!--<execution>-->
+                        <!--<id>generate-rpm</id>-->
+                        <!--<goals>-->
+                        <!--<goal>rpm</goal>-->
+                        <!--</goals>-->
+                        <!--</execution>-->
+                        <!--</executions>-->
                         <executions>
                             <execution>
-                                <id>generate-rpm</id>
+                                <id>attach-rpm</id>
                                 <goals>
-                                    <goal>rpm</goal>
+                                    <goal>attached-rpm</goal>
                                 </goals>
                             </execution>
                         </executions>
@@ -323,21 +327,37 @@
                             <defaultGroupname>websshgroup</defaultGroupname>
 
                             <defineStatements>
-                                <defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
+                                <defineStatement>_webssh_build 0</defineStatement>
+                                <defineStatement>app_user webssh</defineStatement>
+                                <defineStatement>app_user_group websshgroup</defineStatement>
+                                <defineStatement>app_home /usr/local/webssh</defineStatement>
                             </defineStatements>
                             <buildRequires>
-                                <buildRequire>java &gt; 1.8</buildRequire>
+                                <buildRequire>java-1.8.0-openjdk</buildRequire>
                             </buildRequires>
                             <requires>
-                                <require>java &gt; 1.8</require>
+                                <require>java-1.8.0-openjdk</require>
                             </requires>
                             <mappings>
                                 <mapping>
                                     <directory>/usr/local/webssh</directory>
+                                    <filemode>500</filemode>
+                                    <sources>
+                                        <source>
+                                            <location>target/${project.build.finalName}-exec.${project.packaging}
+                                            </location>
+                                        </source>
+                                        <source>
+                                            <location>target/${project.build.finalName}.${project.packaging}</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                                <mapping>
+                                    <directory>/usr/local/webssh/bin</directory>
                                     <filemode>750</filemode>
                                     <sources>
                                         <source>
-                                            <location>target/${project.build.finalName}.${project.packaging}</location>
+                                            <location>src/main/bin</location>
                                         </source>
                                     </sources>
                                 </mapping>
@@ -345,36 +365,41 @@
                                     <directory>/usr/local/bin</directory>
                                     <filemode>750</filemode>
                                     <sources>
-                                        <source>
-                                            <location>src/main/bin</location>
-                                        </source>
                                         <softlinkSource>
-                                            <location>/usr/local/bin/webssh.sh</location>
-                                            <destination>old.sh</destination>
-                                        </softlinkSource>
-                                    </sources>
-                                </mapping>
-                                <mapping>
-                                    <directory>/usr/local/oldbin</directory>
-                                    <filemode>750</filemode>
-                                    <sources>
-                                        <softlinkSource>
-                                            <location>/usr/local/bin</location>
+                                            <location>/usr/local/webssh/bin/webssh</location>
+                                            <destination>webssh</destination>
                                         </softlinkSource>
                                     </sources>
                                 </mapping>
                                 <mapping>
                                     <directory>/usr/local/webssh/config</directory>
                                     <configuration>true</configuration>
-                                    <filemode>640</filemode>
+                                    <filemode>400</filemode>
                                     <sources>
                                         <source>
                                             <location>src/main/resources/config</location>
+                                            <includes>
+                                                <includes>application.properties</includes>
+                                            </includes>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                                <mapping>
+                                    <directory>/usr/local/webssh</directory>
+                                    <configuration>true</configuration>
+                                    <filemode>400</filemode>
+                                    <sources>
+                                        <source>
+                                            <location>target/classes/config/webssh.conf</location>
                                         </source>
                                     </sources>
                                 </mapping>
                                 <mapping>
                                     <directory>/usr/local/webssh/logs</directory>
+                                    <filemode>750</filemode>
+                                </mapping>
+                                <mapping>
+                                    <directory>/usr/local/webssh/data</directory>
                                     <filemode>750</filemode>
                                 </mapping>
                             </mappings>
