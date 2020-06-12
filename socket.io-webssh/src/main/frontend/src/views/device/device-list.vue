@@ -2,7 +2,10 @@
     <div class="home">
         <a-row type="flex" justify="space-between" style="margin: 4px">
             <a-col :span="8">
-                <a-input-search @change="handleChange" @pressEnter="handleChange" v-model="queryText"
+                <a-input-search
+@change="handleChange"
+@pressEnter="handleChange"
+v-model="queryText"
                                 placeholder="input search text"
                                 style="width: 200px;"
                                 @search="handleSearch"
@@ -14,7 +17,8 @@
                 </a>
             </a-col>
         </a-row>
-        <a-table :columns="columns"
+        <a-table
+:columns="columns"
                  :rowKey="record => record.id"
                  :dataSource="data"
                  :pagination="pagination"
@@ -46,9 +50,9 @@
 </template>
 
 <script>
-    import {deleteDevice, getDeviceList} from "@api/api";
-    import DeviceModal from "./device-modal";
-    /* eslint-disable */
+import {deleteDevice, getDeviceList} from "@api/api";
+import DeviceModal from "./device-modal";
+/* eslint-disable */
     const columns = [{
         title: 'No',
         width: '10px',

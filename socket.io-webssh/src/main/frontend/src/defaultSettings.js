@@ -14,19 +14,19 @@
  */
 
 export default {
-  primaryColor: '#1890FF', // primary color of ant design
-  navTheme: 'light', // theme for nav menu
-  layout: 'sidemenu', // nav menu position: sidemenu or topmenu
-  contentWidth: 'Fixed', // layout of content: Fluid or Fixed, only works when layout is topmenu
-  fixedHeader: false, // sticky header
-  fixSiderbar: false, // sticky siderbar
-  autoHideHeader: false, //  auto hide header
-  colorWeak: false,
-  multipage: false, //默认多页签模式
-  // vue-ls options
-  storageOptions: {
-    namespace: 'pro__', // key prefix
-    name: 'ls', // name variable Vue.[ls] or this.[$ls],
-    storage: 'local', // storage name session, local, memory
-  }
+    primaryColor: '#1890FF', // primary color of ant design
+    navTheme: 'light', // theme for nav menu
+    layout: 'sidemenu', // nav menu position: sidemenu or topmenu
+    contentWidth: 'Fixed', // layout of content: Fluid or Fixed, only works when layout is topmenu
+    fixedHeader: false, // sticky header
+    fixSiderbar: false, // sticky siderbar
+    autoHideHeader: false, //  auto hide header
+    colorWeak: false,
+    multipage: false, //默认多页签模式
+    // vue-ls options
+    storageOptions: {
+        namespace: 'pro__', // key prefix
+        name: 'ls', // name variable Vue.[ls] or this.[$ls],
+        storage: 'local', // storage name session, local, memory
+    }
 }

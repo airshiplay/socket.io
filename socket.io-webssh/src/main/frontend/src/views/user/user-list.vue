@@ -6,16 +6,16 @@
 </template>
 
 <script>
-    export default {
-        name: "UserManagement",
-        methods: {
-            handleAdd() {
+export default {
+    name: "UserManagement",
+    methods: {
+        handleAdd() {
 
-            }, handleSearch() {
+        }, handleSearch() {
 
-            }
         }
     }
+}
 </script>
 
 <style scoped>

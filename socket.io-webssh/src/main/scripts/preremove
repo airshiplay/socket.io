@@ -1,2 +1,12 @@
 #!/bin/sh
-set -e
+set +e
+
+systemctl stop webssh.service
+
+systemctl disable webssh.service
+
+sudo chattr -i /usr/local/webssh/webssh.jar
+
+#rm -rf /usr/local/webssh/*
+
+#rm -rf /etc/systemd/system/webssh.service

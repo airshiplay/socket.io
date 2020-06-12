@@ -8,8 +8,8 @@ import './plugins/vue-ls.js'
 Vue.config.productionTip = false
 
 new Vue({
-  router,
+    router,
     i18n,
-  store,
-  render: h => h(App)
+    store,
+    render: h => h(App)
 }).$mount('#app')

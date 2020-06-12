@@ -4,6 +4,7 @@ function ZmodemFile(socket, term, opt) {
     this.term = term;
     this.cache = [];
     this.buffer = [];
+    // eslint-disable-next-line
     let zsentry = new Zmodem.Sentry( {
         to_terminal(octets) {  },  //i.e. send to the terminal
 
@@ -26,9 +27,9 @@ function ZmodemFile(socket, term, opt) {
     }
     this.consume = function (input) {
         if (this.state == '') {
-
+            //
         } else {
-
+            //
         }
         return false
     }

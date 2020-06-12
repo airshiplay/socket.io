@@ -2,7 +2,10 @@
     <div class="home">
         <a-row type="flex" justify="space-between" style="margin: 4px">
             <a-col :span="8">
-                <a-input-search @change="handleChange" @pressEnter="handleChange" v-model="queryText"
+                <a-input-search
+@change="handleChange"
+@pressEnter="handleChange"
+v-model="queryText"
                                 placeholder="input search text"
                                 style="width: 200px;"
                                 @search="handleSearch"
@@ -15,7 +18,8 @@
                 <a href="https://github.com/zhaojh329/rtty" target="_blank" style="float: right">Rtty Client Install Notes </a>
             </a-col>
         </a-row>
-        <a-table :columns="columns"
+        <a-table
+:columns="columns"
                  :rowKey="record => record.devId"
                  :dataSource="data"
                  :pagination="pagination"
@@ -28,6 +32,7 @@
             <template slot="devId" slot-scope="text,record">
                 <a href="javascript:;" @click="() => gotoConsole(record)">{{text}}</a>
             </template>
+            <!--eslint-disable-next-line-->
             <template slot="uptime" slot-scope="text,record">
                 <span>{{UptimeText(text)}}</span>
             </template>
@@ -49,8 +54,8 @@
 </template>
 
 <script>
-    import {getRttyList} from "@api/api";
-    /* eslint-disable */
+import {getRttyList} from "@api/api";
+/* eslint-disable */
     const columns = [{
         title: 'No',
         width: '10px',
