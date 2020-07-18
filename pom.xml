@@ -25,6 +25,7 @@
         <spring-boot.version>2.1.4.RELEASE</spring-boot.version><!--2.1.4.RELEASE-->
         <spring-cloud.version>Finchley.SR2</spring-cloud.version>
         <project.build.timestamp>${timestamp}</project.build.timestamp>
+        <maven_repo_dir>${env.MAVEN_REPO_DIR}</maven_repo_dir>
     </properties>
 
     <dependencyManagement>
@@ -82,6 +83,14 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>airlenet-releases</id>
+            <name>Airlenet Releases</name>
+            <url>https://airlenet.gitee.io/maven-release</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>				
     </repositories>
     <build>
         <plugins>
@@ -238,6 +247,16 @@
                     <name>private-Snapshot</name>
                     <url>http://maven.airlenet.com:8081/repository/maven-snapshots</url>
                 </snapshotRepository>
+            </distributionManagement>
+        </profile>
+		<profile>
+            <id>local</id>
+            <distributionManagement>
+                <repository>
+                    <id>local</id>
+                    <name>local-Releases</name>
+                    <url>file://${maven_repo_dir}</url>
+                </repository>
             </distributionManagement>
         </profile>
     </profiles>
