@@ -30,7 +30,8 @@ public class DeviceSshConnection implements ConnectionListener {
 
     @Override
     public void onConnect(Socket socket) throws ConnectionException {
-        Map<String, String[]> parameterMap = socket.getRequest().getParameterMap();
+//        logger.info(""+socket.getRequest()+"::"+socket.getRequest().getParameterMap());
+        Map<String, String[]> parameterMap = socket.getParameterMap();
         logger.debug("onConnect sessionId={} Request= {} getConnection={} ParameterMap={}", socket.getSession().getSessionId(), socket.getRequest(), socket.getSession().getConnection(), parameterMap);
         String id = getParameter(parameterMap,"id");
         logger.debug("Request= {}  getConnection={} ", socket.getRequest(),socket.getSession().getConnection());

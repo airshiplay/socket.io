@@ -148,4 +148,9 @@ public class Socket implements Outbound, DisconnectListener, EventListener
         TransportConnection connection = getSession().getConnection();
         return connection == null ? null : connection.getRequest();
     }
+
+    public Map<String,String[]> getParameterMap(){
+        TransportConnection connection = getSession().getConnection();
+        return connection.getParameterMap();
+    }
 }

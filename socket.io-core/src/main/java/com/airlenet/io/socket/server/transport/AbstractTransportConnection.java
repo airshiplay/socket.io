@@ -33,6 +33,7 @@ import com.airlenet.io.socket.protocol.SocketIOProtocol;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -47,7 +48,7 @@ public abstract class AbstractTransportConnection implements TransportConnection
     private Session session;
     private Transport transport;
     private HttpServletRequest request;
-
+    private Map<String, String[]> parameterMap;
     public AbstractTransportConnection(Transport transport)
     {
         this.transport = transport;
@@ -130,9 +131,14 @@ public abstract class AbstractTransportConnection implements TransportConnection
     {
         return request;
     }
+    @Override
+    public Map<String, String[]> getParameterMap(){
+            return parameterMap;
+    }
 
     public void setRequest(HttpServletRequest request)
     {
         this.request = request;
+        this.parameterMap =request.getParameterMap();
     }
 }

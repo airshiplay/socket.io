@@ -32,6 +32,7 @@ import com.airlenet.io.socket.protocol.SocketIOPacket;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author Mathieu Carbou
@@ -73,4 +74,6 @@ public interface TransportConnection
      * @return current HTTP request, null if connection is disconnected
      */
     HttpServletRequest getRequest();
+
+    Map<String, String[]> getParameterMap();
 }

@@ -36,8 +36,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public abstract class SocketIOServlet extends HttpServlet
 {
@@ -120,8 +122,8 @@ public abstract class SocketIOServlet extends HttpServlet
 
         if (path.startsWith("/")) path = path.substring(1);
         String[] parts = path.split("/");
-        if (LOGGER.isLoggable(Level.INFO))
-            LOGGER.log(Level.INFO,request.getMethod()+ " " +request.getRequestURI()+" parameter= "+request.getParameterMap().toString());
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.log(Level.FINE,request.getMethod()+ " " +request.getRequestURI()+" parameter={"+request.getParameterMap().entrySet().stream().map(a->a.getKey()+"="+Arrays.asList(a.getValue())).collect(Collectors.joining(","))+"}");
         if ("GET".equals(request.getMethod()) && "socket.io.js".equals(parts[0]))
         {
             response.setContentType("text/javascript");
